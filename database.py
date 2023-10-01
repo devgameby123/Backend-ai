@@ -83,7 +83,3 @@ class DATABASE:
             print("\033[92mINFO:\033[0m     UPDATE query executed successfully!")
         except psycopg2.Error as e:
             print("Error executing UPDATE query:", e)
-
-
-# ตัวอย่างการใช้งาน
-db = DATABASE()

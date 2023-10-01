@@ -1,9 +1,11 @@
 
 from typing import List, Optional
 
+
 class UserRepository():
-    def __init__(self,db):
+    def __init__(self, db):
         pass
+
     def create_user(self, user_data: dict) -> dict:
         pass
 

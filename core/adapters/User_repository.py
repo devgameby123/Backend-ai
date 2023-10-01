@@ -16,6 +16,11 @@ class PostgresUserRepository(UserRepository):
     def get_users(self) -> dict:
         select_query = "SELECT * FROM member"
         result = self.DB.execute_select_query(select_query)
-        users_dict = {user[0]: user[1] for user in result}
+        Users = []
 
-        return users_dict
+        for User in result:
+            id, name = User
+            Users.append(
+                {"id": id, "name": name})
+
+        return Users
