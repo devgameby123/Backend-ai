@@ -14,3 +14,9 @@ class MovieRepository():
 
     def get_movies(self):
         pass
+
+    def get_moviebyCategory(self, c_name: str) -> Optional[dict]:
+        pass
+
+    def get_moviebyRating(self) -> Optional[dict]:
+        pass

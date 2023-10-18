@@ -1,5 +1,7 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form
 from core.adapters.Movie_repository import PostgresMovieRepository
+from core.adapters.Comment import PostgresCommentRepository
+from core.adapters.Sentiment import PostgresSentimentRepository
 from database import DATABASE
 import base64
 from typing import List
@@ -7,16 +9,38 @@ import json
 router = APIRouter()
 db = DATABASE()
 MovieData = PostgresMovieRepository(db)
+CommentData = PostgresCommentRepository(db)
+SentimentData = PostgresSentimentRepository(db)
+SentimentData = PostgresSentimentRepository(db)
 
 
 @router.get("/movies")
-def get_movies():
-    return {"data": MovieData.get_movies()}
+def getMovies():
+    movie = MovieData.get_movies()
+    return {"data": movie}
 
 
-@router.get("/movie/{movie_id}")
-def get_movie(movie_id: int):
+@router.get("/movies/{movie_id}")
+def getmovie(movie_id: int):
     movie = MovieData.get_movie(movie_id)
+    if movie:
+        return {"data": movie}
+    else:
+        raise HTTPException(status_code=404, detail="Movie not found")
+
+
+@router.get("/Category/{c_name}")
+def getmovieCategory(c_name: str):
+    movie = MovieData.get_moviebyCategory(c_name)
+    if movie:
+        return {"data": movie}
+    else:
+        raise HTTPException(status_code=404, detail="Movie not found")
+
+
+@router.get("/Rating")
+def getmovieRaing():
+    movie = MovieData.get_moviebyRating()
     if movie:
         return {"data": movie}
     else:
@@ -27,22 +51,23 @@ def get_movie(movie_id: int):
 async def create_movie(
     file: UploadFile = File(...),
     movie_data: UploadFile = File(...),
-
 ):
     try:
-        # อ่านข้อมูล JSON จากไฟล์
+        # Read and encode the image file
+        base64_image = base64.b64encode(file.file.read()).decode("utf-8")
+
+        # Read JSON data from the movie_data file
         movie_data_content = await movie_data.read()
         movie_data_dict = json.loads(movie_data_content)
 
-        # ต่อไปดำเนินการเหมือนเดิม
+        # Continue with the rest of the code as before
         m_id = movie_data_dict.get("m_id")
         m_name = movie_data_dict.get("m_name")
         duration = movie_data_dict.get("duration")
         rating = movie_data_dict.get("rating")
         story = movie_data_dict.get("story")
         c_id = movie_data_dict.get("c_id")
-        with open(file.filename, "rb") as image_file:
-            base64_image = base64.b64encode(image_file.read()).decode("utf-8")
+        Comment = movie_data_dict.get("Comment")
         data = {
             "m_id": m_id,
             "m_name": m_name,
@@ -50,7 +75,8 @@ async def create_movie(
             "rating": rating,
             "story": story,
             "image": base64_image,
-            "c_id": c_id
+            "c_id": c_id,
+            "Comment": Comment
         }
         MovieData.create_movie(data)
     except FileNotFoundError:
@@ -59,4 +85,74 @@ async def create_movie(
         raise HTTPException(
             status_code=500, detail=f"Internal server error: {str(e)}")
 
-    return {"msg": "Create Suscess"}
+    return {"msg": "Create Success"}
+
+
+@router.get("/comment/{c_id}")
+def getComment(c_id: int):
+    cmt = CommentData.get_Comment(c_id)
+    return {"data": cmt}
+
+
+@router.post("/comment")
+async def create_comment(cmt_data: UploadFile = File(...),):
+    try:
+        # Read JSON data from the movie_data file
+        movie_data_content = await cmt_data.read()
+        movie_data_dict = json.loads(movie_data_content)
+
+        # Continue with the rest of the code as before
+        cmt_text = movie_data_dict.get("cmt_text")
+        m_id = movie_data_dict.get("m_id")
+
+        data = {
+            "cmt_text": cmt_text,
+            "m_id": m_id,
+        }
+        CommentData.create_Comment(data)
+
+    except:
+        print("error")
+    return {"msg": "Create Success"}
+
+
+@router.get("/sentiment/{m_id}")
+def getsentiment(m_id: int):
+    cmt = SentimentData.get_Sentiment(m_id)
+    return {"data": cmt}
+
+
+@router.post("/sentiment")
+async def createsentiment(s_data: UploadFile = File(...)):
+    try:
+        # Read JSON data from the movie_data file
+        movie_data_content = await s_data.read()
+        movie_data_dict = json.loads(movie_data_content)
+
+        # Continue with the rest of the code as before
+        m_id = movie_data_dict.get("m_id")
+        positive = movie_data_dict.get("positive")
+        negative = movie_data_dict.get("negative")
+
+        data = {
+            "m_id": m_id,
+            "positive": positive,
+            "negative": negative,
+        }
+        SentimentData.create_Sentiment(data)
+
+    except:
+        print("error")
+    return {"msg": "Create Success"}
+
+
+@router.get("/comment/{c_id}")
+def getComment(c_id: int):
+    cmt = CommentData.get_Comment(c_id)
+    return {"data": cmt}
+
+
+@router.get("/sentiment/{m_id}")
+def getsentiment(m_id: int):
+    cmt = SentimentData.get_Sentiment(m_id)
+    return {"data": cmt}

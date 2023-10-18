@@ -19,7 +19,37 @@ class DATABASE:
             )
             print("\033[92mINFO:\033[0m     Connection established successfully!")
         except psycopg2.Error as e:
-            print("Error: Unable to connect to the database:")
+            print("Error: Unable to connect to the database:", e)
+
+    def begin_transaction(self):
+        try:
+            if not self.connection:
+                self.db_connection()
+
+            self.connection.autocommit = False
+            print("\033[92mINFO:\033[0m     Transaction started successfully!")
+        except psycopg2.Error as e:
+            print("Error beginning transaction:", e)
+
+    def commit_transaction(self):
+        try:
+            if self.connection:
+                self.connection.commit()
+                self.connection.autocommit = True  # Return to autocommit mode
+                print(
+                    "\033[92mINFO:\033[0m     Transaction committed successfully!")
+        except psycopg2.Error as e:
+            print("Error committing transaction:", e)
+
+    def rollback_transaction(self):
+        try:
+            if self.connection:
+                self.connection.rollback()
+                self.connection.autocommit = True  # Return to autocommit mode
+                print(
+                    "\033[92mINFO:\033[0m     Transaction rolled back successfully!")
+        except psycopg2.Error as e:
+            print("Error rolling back transaction:", e)
 
     def execute_select_query(self, query):
         try:
@@ -28,7 +58,7 @@ class DATABASE:
 
             cursor = self.connection.cursor()
             cursor.execute(query)
-            result = cursor.fetchall()  # หรือ fetchone() ถ้าคุณต้องการข้อมูลเพียงรายการเดียว
+            result = cursor.fetchall()
             cursor.close()
             return result
         except psycopg2.Error as e:
@@ -52,6 +82,7 @@ class DATABASE:
             print("\033[92mINFO:\033[0m     INSERT query executed successfully!")
         except psycopg2.Error as e:
             print("Error executing INSERT query:", e)
+            self.rollback_transaction()  # Rollback in case of error
 
     def execute_delete_query(self, query):
         try:
@@ -65,6 +96,7 @@ class DATABASE:
             print("\033[92mINFO:\033[0m     DELETE query executed successfully!")
         except psycopg2.Error as e:
             print("Error executing DELETE query:", e)
+            self.rollback_transaction()  # Rollback in case of error
 
     def execute_update_query(self, query, params=None):
         try:
@@ -83,3 +115,4 @@ class DATABASE:
             print("\033[92mINFO:\033[0m     UPDATE query executed successfully!")
         except psycopg2.Error as e:
             print("Error executing UPDATE query:", e)
+            self.rollback_transaction()  # Rollback in case of error
