@@ -156,3 +156,11 @@ def getComment(c_id: int):
 def getsentiment(m_id: int):
     cmt = SentimentData.get_Sentiment(m_id)
     return {"data": cmt}
+
+@router.get("/search/{m_name}")
+def getsearch(m_name: str):
+    movie = MovieData.get_movies_search(m_name)
+    if movie:
+        return {"data": movie}
+    else:
+        raise HTTPException(status_code=404, detail="Movie not found")

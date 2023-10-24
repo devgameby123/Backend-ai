@@ -20,3 +20,6 @@ class MovieRepository():
 
     def get_moviebyRating(self) -> Optional[dict]:
         pass
+
+    def get_movies_search(self, m_name: str) -> Optional[dict]:
+        pass
