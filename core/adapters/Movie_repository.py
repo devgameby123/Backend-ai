@@ -182,7 +182,7 @@ class PostgresMovieRepository(MovieRepository):
         movies = []
         for row in result_Id:
             movie_id = row[0]
-            movie_info = self.get_movie_by_id(movie_id)
+            movie_info = self.get_movie(movie_id)
             movies.append(movie_info)
 
         return movies
