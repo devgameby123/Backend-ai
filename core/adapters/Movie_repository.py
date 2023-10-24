@@ -179,4 +179,5 @@ class PostgresMovieRepository(MovieRepository):
         limit = 4
         select_query = f"SELECT Movie.m_id FROM Movie WHERE Movie.m_name LIKE '%{m_name}%' LIMIT {limit};"
         result = self.DB.execute_select_query(select_query)
+        return result
         
