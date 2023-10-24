@@ -154,7 +154,7 @@ class PostgresMovieRepository(MovieRepository):
             else:
                 image_base64 = None
 
-            select_query = f"SELECT c_id FROM Movie_Category WHERE m_id ={m_id};"
+            select_query = f"SELECT c_id FROM    WHERE m_id ={m_id};"
             category_ids = self.DB.execute_select_query(select_query)
             categories = [category[0] for category in category_ids]
             Alltag = []
@@ -179,6 +179,28 @@ class PostgresMovieRepository(MovieRepository):
         limit = 4
         select_query = f"SELECT Movie.m_id FROM Movie WHERE Movie.m_name LIKE '%{m_name}%' LIMIT {limit};"
         result_Id = self.DB.execute_select_query(select_query)
+        movies = []
+        for row in result_Id:
+            movie_id = row[0]
+            movie_info = self.get_movie(movie_id)
+            movies.append(movie_info)
+
+        return movies
+
+    def get_top_movies_by(self,sort_by: str, way: int, limit: int):
+        if way == 0:
+            desc = ' '
+        else:
+            desc = ' DESC '
+
+        if sort_by == 'rating':
+            query = f"SELECT Movie.m_id FROM Movie ORDER BY rating{desc}LIMIT {limit};"
+        elif sort_by == 'sentiment':
+            query = f"SELECT m_id FROM Sentiment ORDER BY percentage{desc}LIMIT {limit};"
+        else:
+            query = f"SELECT Movie.m_id FROM Movie LIMIT {limit}"
+
+        result_Id = self.DB.execute_select_query(query)
         movies = []
         for row in result_Id:
             movie_id = row[0]

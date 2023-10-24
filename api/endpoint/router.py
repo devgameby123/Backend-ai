@@ -164,3 +164,11 @@ def getsearch(m_name: str):
         return {"data": movie}
     else:
         raise HTTPException(status_code=404, detail="Movie not found")
+
+@router.get("/search_by_sort/{sort_by}/{way}/{limit}")
+def getsearchbysort(sort_by: str, way: int, limit: int):
+    movies = MovieData.get_top_movies_by(sort_by, way, limit)
+    if movies:
+        return {"data": movies}
+    else:
+        raise HTTPException(status_code=404, detail="Movie not found")
