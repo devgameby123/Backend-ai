@@ -128,6 +128,9 @@ class PostgresMovieRepository(MovieRepository):
             else:
                 image_base64 = None
 
+            select_query = f"SELECT percentage FROM Sentiment WHERE m_id ={m_id};"
+            sentiment = self.DB.execute_select_query(select_query)
+            
             select_query = f"SELECT c_id FROM Movie_Category WHERE m_id ={m_id};"
             category_ids = self.DB.execute_select_query(select_query)
             categories = [category[0] for category in category_ids]
@@ -148,6 +151,7 @@ class PostgresMovieRepository(MovieRepository):
                 "writers": writers,
                 "actor": actor,
                 "yearRelease": yearRelease,
+                "sentiment": sentiment[0][0],
                 "Image": image_base64
             })
 
@@ -166,6 +170,8 @@ class PostgresMovieRepository(MovieRepository):
             else:
                 image_base64 = None
 
+            select_query = f"SELECT percentage FROM Sentiment WHERE m_id ={m_id};"
+            sentiment = self.DB.execute_select_query(select_query)
             select_query = f"SELECT c_id FROM    WHERE m_id ={m_id};"
             category_ids = self.DB.execute_select_query(select_query)
             categories = [category[0] for category in category_ids]
@@ -186,6 +192,7 @@ class PostgresMovieRepository(MovieRepository):
                 "writers": writers,
                 "actor": actor,
                 "yearRelease": yearRelease,
+                "sentiment": sentiment[0][0],
                 "Image": image_base64
             })
 
