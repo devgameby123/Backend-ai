@@ -172,7 +172,7 @@ class PostgresMovieRepository(MovieRepository):
 
             select_query = f"SELECT percentage FROM Sentiment WHERE m_id ={m_id};"
             sentiment = self.DB.execute_select_query(select_query)
-            select_query = f"SELECT c_id FROM    WHERE m_id ={m_id};"
+            select_query = f"SELECT c_id FROM Category WHERE m_id ={m_id};"
             category_ids = self.DB.execute_select_query(select_query)
             categories = [category[0] for category in category_ids]
             Alltag = []
