@@ -7,7 +7,7 @@ import base64
 def get_movies():
     try:
         # Replace with the actual URL of your get_movies endpoint
-        response = requests.get('http://127.0.0.1:8000/movies')
+        response = requests.get('https://osxhon361z.ap.loclx.io/movies/1')
         if response.status_code == 200:
             return response.json()
         else:
@@ -45,9 +45,4 @@ def display_movie_info(movie_data):
 
 # Example usage
 movies = get_movies()
-
-if movies and 'data' in movies:
-    movie_data = movies['data']
-    display_movie_info(movie_data)
-else:
-    print("No movie data found.")
+print(movies)

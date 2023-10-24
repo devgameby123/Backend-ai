@@ -14,6 +14,11 @@ SentimentData = PostgresSentimentRepository(db)
 SentimentData = PostgresSentimentRepository(db)
 
 
+@router.get('/')
+def root():
+    return {"msg": "Hello"}
+
+
 @router.get("/movies")
 def getMovies():
     movie = MovieData.get_movies()
@@ -29,18 +34,19 @@ def getmovie(movie_id: int):
         raise HTTPException(status_code=404, detail="Movie not found")
 
 
-@router.get("/Category/{c_name}")
-def getmovieCategory(c_name: str):
-    movie = MovieData.get_moviebyCategory(c_name)
+@router.get("/Category/{c_name}/{limit}")
+def getmovieCategory(c_name: str, limit: int):
+    movie = MovieData.get_moviebyCategory(c_name, limit)
     if movie:
         return {"data": movie}
     else:
         raise HTTPException(status_code=404, detail="Movie not found")
 
 
-@router.get("/Rating")
-def getmovieRaing():
-    movie = MovieData.get_moviebyRating()
+@router.get("/Rating/{limit}")
+def getmovieRaing(limit: int = 0):
+
+    movie = MovieData.get_moviebyRating(limit)
     if movie:
         return {"data": movie}
     else:

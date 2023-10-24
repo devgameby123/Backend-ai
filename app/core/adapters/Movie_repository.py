@@ -8,14 +8,14 @@ class PostgresMovieRepository(MovieRepository):
     def __init__(self, db):
         self.DB = db
 
-    def get_moviebyRating(self) -> dict | None:
-        select_query = f"SELECT * FROM Movie ORDER BY rating DESC Limit 4;"
+    def get_moviebyRating(self, limit: int) -> dict:
+        select_query = f"SELECT * FROM Movie ORDER BY rating DESC Limit {limit};"
         result = self.DB.execute_select_query(select_query)
 
         movies_with_images = []
 
         for movie in result:
-            m_id, m_name, duration, rating, story, Image = movie
+            m_id, m_name, duration, rating, story, director, writers, actor, yearRelease, Image = movie
             if Image is not None:
                 image_base64 = base64.b64encode(Image).decode('utf-8')
             else:
@@ -37,19 +37,23 @@ class PostgresMovieRepository(MovieRepository):
                 "rating": rating,
                 "story": story,
                 "Tag": tags,
+                "director": director,
+                "writers": writers,
+                "actor": actor,
+                "yearRelease": yearRelease,
                 "Image": image_base64
             })
 
         return movies_with_images
 
-    def get_moviebyCategory(self, c_name: str) -> dict | None:
-        select_query = f"SELECT Movie.m_id,Movie.m_name,Movie.duration,Movie.rating,Movie.story,Movie.Image FROM Movie JOIN Movie_Category ON Movie.m_id = Movie_Category.m_id JOIN Category ON Movie_Category.c_id = Category.c_id WHERE Category.c_name = '{c_name}' LIMIT 4;"
+    def get_moviebyCategory(self, c_name: str, limit: int) -> dict:
+        select_query = f"SELECT Movie.m_id,Movie.m_name,Movie.duration,Movie.rating,Movie.story,movie.director,Movie.writers,movie.actor,Movie.yearrelease,Movie.Image FROM Movie JOIN Movie_Category ON Movie.m_id = Movie_Category.m_id JOIN Category ON Movie_Category.c_id = Category.c_id WHERE Category.c_name = '{c_name}' LIMIT {limit};"
         result = self.DB.execute_select_query(select_query)
 
         movies_with_images = []
 
         for movie in result:
-            m_id, m_name, duration, rating, story, Image = movie
+            m_id, m_name, duration, rating, story, director, writers, actor, yearRelease, Image = movie
             if Image is not None:
                 image_base64 = base64.b64encode(Image).decode('utf-8')
             else:
@@ -71,6 +75,10 @@ class PostgresMovieRepository(MovieRepository):
                 "rating": rating,
                 "story": story,
                 "Tag": tags,
+                "director": director,
+                "writers": writers,
+                "actor": actor,
+                "yearRelease": yearRelease,
                 "Image": image_base64
             })
 
@@ -114,7 +122,7 @@ class PostgresMovieRepository(MovieRepository):
         movies_with_images = []
 
         for movie in result:
-            m_id, m_name, duration, rating, story, Image = movie
+            m_id, m_name, duration, rating, story, director, writers, actor, yearRelease, Image = movie
             if Image is not None:
                 image_base64 = base64.b64encode(Image).decode('utf-8')
             else:
@@ -136,6 +144,10 @@ class PostgresMovieRepository(MovieRepository):
                 "rating": rating,
                 "story": story,
                 "Tag": tags,
+                "director": director,
+                "writers": writers,
+                "actor": actor,
+                "yearRelease": yearRelease,
                 "Image": image_base64
             })
 
@@ -148,7 +160,7 @@ class PostgresMovieRepository(MovieRepository):
         movies_with_images = []
 
         for movie in result:
-            m_id, m_name, duration, rating, story, Image = movie
+            m_id, m_name, duration, rating, story, director, writers, actor, yearRelease, Image = movie
             if Image is not None:
                 image_base64 = base64.b64encode(Image).decode('utf-8')
             else:
@@ -170,6 +182,10 @@ class PostgresMovieRepository(MovieRepository):
                 "rating": rating,
                 "story": story,
                 "Tag": tags,
+                "director": director,
+                "writers": writers,
+                "actor": actor,
+                "yearRelease": yearRelease,
                 "Image": image_base64
             })
 
