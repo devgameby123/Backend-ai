@@ -47,42 +47,14 @@ class PostgresMovieRepository(MovieRepository):
         return movies_with_images
 
     def get_moviebyCategory(self, c_name: str, limit: int) -> dict:
-        select_query = f"SELECT Movie.m_id,Movie.m_name,Movie.duration,Movie.rating,Movie.story,movie.director,Movie.writers,movie.actor,Movie.yearrelease,Movie.Image FROM Movie JOIN Movie_Category ON Movie.m_id = Movie_Category.m_id JOIN Category ON Movie_Category.c_id = Category.c_id WHERE Category.c_name = '{c_name}' LIMIT {limit};"
-        result = self.DB.execute_select_query(select_query)
-
-        movies_with_images = []
-
-        for movie in result:
-            m_id, m_name, duration, rating, story, director, writers, actor, yearRelease, Image = movie
-            if Image is not None:
-                image_base64 = base64.b64encode(Image).decode('utf-8')
-            else:
-                image_base64 = None
-
-            select_query = f"SELECT c_id FROM Movie_Category WHERE m_id ={m_id};"
-            category_ids = self.DB.execute_select_query(select_query)
-            categories = [category[0] for category in category_ids]
-            Alltag = []
-            for data in categories:
-                select_query = f"SELECT c_name FROM Category WHERE c_id = {data};"
-                Tag: str = self.DB.execute_select_query(select_query)
-                Alltag.append(Tag)
-            tags = [tag[0][0] for tag in Alltag]
-            movies_with_images.append({
-                "id": m_id,
-                "m_name": m_name,
-                "duration": duration,
-                "rating": rating,
-                "story": story,
-                "Tag": tags,
-                "director": director,
-                "writers": writers,
-                "actor": actor,
-                "yearRelease": yearRelease,
-                "Image": image_base64
-            })
-
-        return movies_with_images
+        query = f"SELECT Movie.m_id FROM Movie JOIN Sentiment ON Movie.m_id = Sentiment.m_id JOIN Movie_Category ON Movie.m_id = Movie_Category.m_id JOIN Category ON Movie_Category.c_id = Category.c_id WHERE Category.c_name = '{c_name}' ORDER BY Sentiment.percentage LIMIT {limit};"
+        result_Id = self.DB.execute_select_query(query)
+        movies = []
+        for row in result_Id:
+            movie_id = row[0]
+            movie_info = self.get_movie(movie_id)
+            movies.append(movie_info)
+        return movies
 
     def create_movie(self, movie_data: dict):
         m_id = movie_data.get("m_id")
